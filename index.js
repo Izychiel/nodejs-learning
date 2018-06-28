@@ -11,11 +11,12 @@ app.get('/', function (req, res) {	// HOME
 	res.send(req.params.pseudo);	// A PARAMETER FROM URL
 })
 
+// TEMPLATE WITH EJS
 .get('/ejs/:val', function (req, res) {
 	res.setHeader('Content-Type', 'text/html');
 
 	const allVal = req.params.val.split('&');
-	res.render('ejstest.ejs', {val: allVal});
+	res.render('ejstest.ejs', {val: allVal});	// RENDER WITH A TEMPLATE
 })
 
 // 404 PAGE

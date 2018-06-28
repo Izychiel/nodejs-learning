@@ -1,0 +1,10 @@
+{
+  "name": "nodejs",
+  "version": "0.1.0",
+  "dependencies": {
+	"express": "~4.16.3",
+	"ejs": "~2.6.1"
+  },
+  "author": "Izychiel",
+  "description": "First Node App"
+}
