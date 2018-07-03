@@ -11,38 +11,58 @@
 const sessLen = session.length;
 for(let i=0; i<sessLen; i++){
 %>
-	<li><%=session[i]%></li>
+	<li><%=session[i]%> <button onclick="delTodo(<%=i%>)">Delete</button></li>
 <% } %>
 </ul>
 
 <form id="addtodoform">
-	<input type="text" id="add-todo" name="add-todo" placeholder="Add ToDo">
+	<input type="text" id="add-todo" name="add-todo" placeholder="Add ToDo" autocomplete="off" autofocus>
 	<input type="submit" value="Add">
 </form>
 <script type="text/javascript">
-	(function () {
+	(function () {	// ADDING TODO
 		document.getElementById('addtodoform').addEventListener('submit',function (e) {	// XMLHttpRequest TO ADD TO SESSION
 			e.preventDefault();
 
 			const todoAdd = document.getElementById('add-todo').value;
 			if(!/^\s+$/.test(todoAdd) && todoAdd){
 				const xhr = new XMLHttpRequest();
-				xhr.open("POST", "todo/add")
+				xhr.open("POST", "/todo/add")
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 				xhr.send('value=' + todoAdd);
 
 				xhr.addEventListener('readystatechange', function () {
-					console.log(xhr.readyState);
 					if (xhr.readyState === XMLHttpRequest.DONE) {
 						const newTodo = document.createElement('li');	// ADD TODO IN THE LIST
-						console.log(xhr.responseText);
-						newTodo.textContent = todoAdd;
+						newTodo.textContent = todoAdd + ' ';
+
+						const delTodo = document.createElement('button');	// ADD DELETE BUTTON
+						delTodo.setAttribute('onclick', 'delTodo(' + document.querySelectorAll('ul#todolist li').length + ')')
+						delTodo.textContent = 'Delete';
+						newTodo.appendChild(delTodo);
+
 						document.getElementById('todolist').appendChild(newTodo);
 					}
 				})
 			}
+			document.getElementById('add-todo').value = '';
 		});
 	})()
+
+	function delTodo(id) {	// DELETE A TODO
+		const xhr = new XMLHttpRequest();
+		xhr.open("GET", "/todo/del/" + id)
+		xhr.send(null);
+
+		xhr.addEventListener('readystatechange', function () {
+			console.log(xhr.readyState);
+			if (xhr.readyState === XMLHttpRequest.DONE) {
+				console.log(xhr.responseText);
+				const todos = document.querySelectorAll('ul#todolist li');
+				document.getElementById('todolist').removeChild(todos[id]);
+			}
+		})
+	}
 </script>
 </body>
 </html>
