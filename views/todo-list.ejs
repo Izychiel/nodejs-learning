@@ -8,10 +8,10 @@
 <h1>Todo List</h1>
 <ul id="todolist">
 <%
-const sessLen = session.length;
-for(let i=0; i<sessLen; i++){
+const todolistLen = todolist.length;
+for(let i=0; i<todolistLen ; i++){
 %>
-	<li><%=session[i]%> <button onclick="delTodo(<%=i%>)">Delete</button></li>
+	<li><%=todolist[i]%> <button onclick="delTodo(<%=i%>)">Delete</button></li>
 <% } %>
 </ul>
 
