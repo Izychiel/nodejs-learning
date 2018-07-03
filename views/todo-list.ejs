@@ -55,9 +55,7 @@ for(let i=0; i<todolistLen ; i++){
 		xhr.send(null);
 
 		xhr.addEventListener('readystatechange', function () {
-			console.log(xhr.readyState);
 			if (xhr.readyState === XMLHttpRequest.DONE) {
-				console.log(xhr.responseText);
 				const todos = document.querySelectorAll('ul#todolist li');
 				document.getElementById('todolist').removeChild(todos[id]);
 			}

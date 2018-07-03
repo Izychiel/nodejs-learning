@@ -23,7 +23,7 @@ app.use(session({secret:'todosecret'}))
 .post('/todo/add',function (req, res) {	// ADDING A TODO
 	res.setHeader('Content-Type', 'text/plain');
 
-	req.session.todolist[req.session.todolist.length] = req.body.value;
+	req.session.todolist.push(req.body.value);
 	res.end();
 })
 
@@ -32,14 +32,15 @@ app.use(session({secret:'todosecret'}))
 	const paramId = parseInt(req.params.id);
 
 	req.session.todolist.splice(paramId, 1);	// DELETING IT
-	res.end();
+	res.redirect('/todo');
 })
 
 .use((req, res, next) => {	// 404 PAGE
-	res.setHeader('Content-Type','text/html');
+	/*res.setHeader('Content-Type','text/html');
 	res.status(404);
 	res.render('todo-404.ejs', {path: req.originalUrl, session: req.session});
-	res.end();
-});
+	res.end();*/
+	res.redirect('/todo');
+})
 
-app.listen(8080);
+.listen(8080);
