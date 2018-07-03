@@ -5,6 +5,44 @@
 	<title>Todo List</title>
 </head>
 <body>
-	<h1>Todo List</h1>
+<h1>Todo List</h1>
+<ul id="todolist">
+<%
+const sessLen = session.length;
+for(let i=0; i<sessLen; i++){
+%>
+	<li><%=session[i]%></li>
+<% } %>
+</ul>
+
+<form id="addtodoform">
+	<input type="text" id="add-todo" name="add-todo" placeholder="Add ToDo">
+	<input type="submit" value="Add">
+</form>
+<script type="text/javascript">
+	(function () {
+		document.getElementById('addtodoform').addEventListener('submit',function (e) {	// XMLHttpRequest TO ADD TO SESSION
+			e.preventDefault();
+
+			const todoAdd = document.getElementById('add-todo').value;
+			if(!/^\s+$/.test(todoAdd) && todoAdd){
+				const xhr = new XMLHttpRequest();
+				xhr.open("POST", "todo/add")
+				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				xhr.send('value=' + todoAdd);
+
+				xhr.addEventListener('readystatechange', function () {
+					console.log(xhr.readyState);
+					if (xhr.readyState === XMLHttpRequest.DONE) {
+						const newTodo = document.createElement('li');	// ADD TODO IN THE LIST
+						console.log(xhr.responseText);
+						newTodo.textContent = todoAdd;
+						document.getElementById('todolist').appendChild(newTodo);
+					}
+				})
+			}
+		});
+	})()
+</script>
 </body>
 </html>
