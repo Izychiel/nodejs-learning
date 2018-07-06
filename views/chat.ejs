@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="/css/style.css">
+	<meta charset="UTF-8">
+	<title>Chat</title>
+</head>
+<body>
+<div id="login">
+	<form id="logForm" >
+		<label for="logInput">Pseudo:</label>
+		<input type="text" id="logInput" name="logInput" placeholder="Pseudo" autofocus>
+		<input type="submit" value="Login">
+	</form>
+</div>
+<div id="chat">
+	<div id="msgContainer">
+		<div class="message"><span class="pseudo">Pseudo:</span><span class="content">Ceci est un message Ceci est un message Ceci est un message Ceci est un message Ceci est un message Ceci est un message</span></div>
+		<div class="message"><span class="pseudo">Pseudo:</span><span class="content">Ceci est un message</span></div>
+		<div class="message"><span class="pseudo">Pseudo:</span><span class="content">Ceci est un message</span></div>
+		<div class="message"><span class="login">Pseudo joined the chat</span></div>
+	</div>
+</div>
+<div id="message">
+	<form id="chatForm" >
+		<input type="text" id="chatMsg" name="chatMsg" placeholder="Send message" autocomplete="off">
+		<input type="submit" value="Send message">
+	</form>
+</div>
+
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+	(function () {
+		let myPseudo;
+
+		const socket = io.connect('http://localhost:8080')
+
+		socket.on('chat',function (message) {	// RECEIVING MESSAGE
+			console.log(message['pseudo'] + ' ' + message['message']);
+
+			const msg = document.createElement('div');	// POSTING MSG
+			msg.setAttribute('class','message');
+
+			const pseudo = document.createElement('span');
+			pseudo.setAttribute('class','pseudo');
+			pseudo.textContent = message['pseudo'];
+
+			const content = document.createElement('span');
+			content.setAttribute('class','content');
+			content.textContent = message['message'];
+
+			msg.appendChild(pseudo);
+			msg.appendChild(content);
+
+			const msgContainer = document.getElementById('msgContainer');
+			msgContainer.appendChild(msg);
+
+			while(msgContainer.offsetHeight > 500){	// IF TOO MUCH MSG
+				let delMsg = msgContainer.firstChild;
+				while (delMsg.nodeName !== "DIV"){
+					delMsg = delMsg.nextSibling;
+				}
+
+				msgContainer.removeChild(delMsg);
+			}
+		});
+		socket.on('login',function (pseudo) {	// RECEIVING MESSAGE
+			console.log(pseudo);
+		});
+
+		document.getElementById('logForm').addEventListener('submit',function (e) {	// WHEN LOGIN
+			e.preventDefault();
+
+			const pseudo = document.getElementById('logInput').value;
+			socket.emit('login', pseudo);
+			myPseudo = pseudo;
+			document.getElementById('login').style.display = 'none';
+			document.getElementById('message').style.display = 'block';
+			document.getElementById('chatMsg').focus();
+		});
+
+		document.getElementById('chatForm').addEventListener('submit',function (e) {	// WHEN SEND MSG
+			e.preventDefault();
+
+			const msg = document.getElementById('chatMsg');
+			if(myPseudo && !/^\s+$/.test(msg.value) && msg.value !== '') {
+				socket.emit('chat', {"pseudo": myPseudo, "message": msg.value});
+				msg.value = '';
+			}
+		});
+	})();
+</script>
+</body>
+</html>

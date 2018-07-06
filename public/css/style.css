@@ -1,0 +1,23 @@
+#message {
+	display: none;
+}
+
+#chat {
+	/*display: none;*/
+	border: 1px black solid;
+	height: 500px;
+	width: 100%;
+}
+.message {
+	margin-bottom: 5px;
+	width: 100%;
+}
+.login {
+	font-style: italic;
+}
+.pseudo {
+	margin-right: 5px;
+	font-weight: bold;
+}
+.content {
+}
