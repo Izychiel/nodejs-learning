@@ -35,6 +35,20 @@
 
 		const socket = io.connect('http://localhost:8080')
 
+		function appendMsgContainer(item) {
+			const msgContainer = document.getElementById('msgContainer');
+			msgContainer.appendChild(item);
+
+			while(msgContainer.offsetHeight > 500){	// IF TOO MUCH MSG
+				let delMsg = msgContainer.firstChild;
+				while (delMsg.nodeName !== "DIV"){
+					delMsg = delMsg.nextSibling;
+				}
+
+				msgContainer.removeChild(delMsg);
+			}
+		}
+
 		socket.on('chat',function (message) {	// RECEIVING MESSAGE
 			console.log(message['pseudo'] + ' ' + message['message']);
 
@@ -52,20 +66,18 @@
 			msg.appendChild(pseudo);
 			msg.appendChild(content);
 
-			const msgContainer = document.getElementById('msgContainer');
-			msgContainer.appendChild(msg);
-
-			while(msgContainer.offsetHeight > 500){	// IF TOO MUCH MSG
-				let delMsg = msgContainer.firstChild;
-				while (delMsg.nodeName !== "DIV"){
-					delMsg = delMsg.nextSibling;
-				}
-
-				msgContainer.removeChild(delMsg);
-			}
+			appendMsgContainer(msg);
 		});
 		socket.on('login',function (pseudo) {	// RECEIVING MESSAGE
-			console.log(pseudo);
+			const join = document.createElement('div');
+			join.setAttribute('class','message');
+
+			const joinMsg = document.createElement('span');
+			joinMsg.setAttribute('class','login');
+			joinMsg.textContent = pseudo + ' joined the chat';
+
+			join.appendChild(joinMsg);
+			appendMsgContainer(join);
 		});
 
 		document.getElementById('logForm').addEventListener('submit',function (e) {	// WHEN LOGIN
