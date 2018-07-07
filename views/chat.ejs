@@ -15,10 +15,6 @@
 </div>
 <div id="chat">
 	<div id="msgContainer">
-		<div class="message"><span class="pseudo">Pseudo:</span><span class="content">Ceci est un message Ceci est un message Ceci est un message Ceci est un message Ceci est un message Ceci est un message</span></div>
-		<div class="message"><span class="pseudo">Pseudo:</span><span class="content">Ceci est un message</span></div>
-		<div class="message"><span class="pseudo">Pseudo:</span><span class="content">Ceci est un message</span></div>
-		<div class="message"><span class="login">Pseudo joined the chat</span></div>
 	</div>
 </div>
 <div id="message">
@@ -31,6 +27,8 @@
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 	(function () {
+		// ADD MESSAGES CHARGING ON LOGIN AND HIDE CHAT BEFORE
+
 		let myPseudo;
 
 		const socket = io.connect('http://localhost:8080')
@@ -49,35 +47,73 @@
 			}
 		}
 
-		socket.on('chat',function (message) {	// RECEIVING MESSAGE
-			console.log(message['pseudo'] + ' ' + message['message']);
+		socket.on('msglog',function (message) {	// RECEIVING MESSAGES BEFORE LOGIN
+			if(myPseudo) {
+				const len = message['pseudos'].length;
+				for(let i=0; i<len; i++){
+					if(message['messages'][i] === '|'+myPseudo+'|') {
+						// DON'T SHOW OWN LOGIN MESSAGES
+					}else if (message['messages'][i] === '|'+message['pseudos'][i]+'|'){
+						const join = document.createElement('div');
+						join.setAttribute('class', 'message');
 
-			const msg = document.createElement('div');	// POSTING MSG
-			msg.setAttribute('class','message');
+						const joinMsg = document.createElement('span');
+						joinMsg.setAttribute('class', 'login');
+						joinMsg.textContent = message['pseudos'][i] + ' joined the chat';
 
-			const pseudo = document.createElement('span');
-			pseudo.setAttribute('class','pseudo');
-			pseudo.textContent = message['pseudo'];
+						join.appendChild(joinMsg);
+						appendMsgContainer(join);
+					}else{
+						const msg = document.createElement('div');	// POSTING MSG
+						msg.setAttribute('class', 'message');
 
-			const content = document.createElement('span');
-			content.setAttribute('class','content');
-			content.textContent = message['message'];
+						const pseudo = document.createElement('span');
+						pseudo.setAttribute('class', 'pseudo');
+						pseudo.textContent = message['pseudos'][i];
 
-			msg.appendChild(pseudo);
-			msg.appendChild(content);
+						const content = document.createElement('span');
+						content.setAttribute('class', 'content');
+						content.textContent = message['messages'][i];
 
-			appendMsgContainer(msg);
+						msg.appendChild(pseudo);
+						msg.appendChild(content);
+
+						appendMsgContainer(msg);
+					}
+				}
+			}
 		});
-		socket.on('login',function (pseudo) {	// RECEIVING MESSAGE
-			const join = document.createElement('div');
-			join.setAttribute('class','message');
+		socket.on('chat',function (message) {	// RECEIVING MESSAGE
+			if(myPseudo) {
+				const msg = document.createElement('div');	// POSTING MSG
+				msg.setAttribute('class', 'message');
 
-			const joinMsg = document.createElement('span');
-			joinMsg.setAttribute('class','login');
-			joinMsg.textContent = pseudo + ' joined the chat';
+				const pseudo = document.createElement('span');
+				pseudo.setAttribute('class', 'pseudo');
+				pseudo.textContent = message['pseudo'];
 
-			join.appendChild(joinMsg);
-			appendMsgContainer(join);
+				const content = document.createElement('span');
+				content.setAttribute('class', 'content');
+				content.textContent = message['message'];
+
+				msg.appendChild(pseudo);
+				msg.appendChild(content);
+
+				appendMsgContainer(msg);
+			}
+		});
+		socket.on('login',function (pseudo) {	// RECEIVING LOGIN
+			if(myPseudo) {
+				const join = document.createElement('div');
+				join.setAttribute('class', 'message');
+
+				const joinMsg = document.createElement('span');
+				joinMsg.setAttribute('class', 'login');
+				joinMsg.textContent = pseudo + ' joined the chat';
+
+				join.appendChild(joinMsg);
+				appendMsgContainer(join);
+			}
 		});
 
 		document.getElementById('logForm').addEventListener('submit',function (e) {	// WHEN LOGIN
@@ -87,6 +123,7 @@
 			socket.emit('login', pseudo);
 			myPseudo = pseudo;
 			document.getElementById('login').style.display = 'none';
+			document.getElementById('chat').style.display = 'block';
 			document.getElementById('message').style.display = 'block';
 			document.getElementById('chatMsg').focus();
 		});
@@ -97,7 +134,23 @@
 			const msg = document.getElementById('chatMsg');
 			if(myPseudo && !/^\s+$/.test(msg.value) && msg.value !== '') {
 				socket.emit('chat', {"pseudo": myPseudo, "message": msg.value});
+
+				const msgPost = document.createElement('div');	// POSTING MSG
+				msgPost.setAttribute('class','message');
+
+				const pseudo = document.createElement('span');
+				pseudo.setAttribute('class','pseudo');
+				pseudo.textContent = myPseudo;
+
+				const content = document.createElement('span');
+				content.setAttribute('class','content');
+				content.textContent = msg.value;
+
 				msg.value = '';
+
+				msgPost.appendChild(pseudo);
+				msgPost.appendChild(content);
+				appendMsgContainer(msgPost);
 			}
 		});
 	})();
