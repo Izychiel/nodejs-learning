@@ -27,7 +27,7 @@
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 	(function () {
-		// ADD MESSAGES CHARGING ON LOGIN AND HIDE CHAT BEFORE
+		// ADD CLEARCHAT AND DATE
 
 		let myPseudo;
 
@@ -67,6 +67,10 @@
 						const msg = document.createElement('div');	// POSTING MSG
 						msg.setAttribute('class', 'message');
 
+						const timeMsg = document.createElement('span');
+						timeMsg.setAttribute('class', 'date');
+						timeMsg.textContent = message['date'];
+
 						const pseudo = document.createElement('span');
 						pseudo.setAttribute('class', 'pseudo');
 						pseudo.textContent = message['pseudos'][i];
@@ -75,6 +79,7 @@
 						content.setAttribute('class', 'content');
 						content.textContent = message['messages'][i];
 
+						msg.appendChild(timeMsg);
 						msg.appendChild(pseudo);
 						msg.appendChild(content);
 
@@ -88,6 +93,10 @@
 				const msg = document.createElement('div');	// POSTING MSG
 				msg.setAttribute('class', 'message');
 
+				const timeMsg = document.createElement('span');
+				timeMsg.setAttribute('class', 'date');
+				timeMsg.textContent = message['date'];
+
 				const pseudo = document.createElement('span');
 				pseudo.setAttribute('class', 'pseudo');
 				pseudo.textContent = message['pseudo'];
@@ -96,12 +105,24 @@
 				content.setAttribute('class', 'content');
 				content.textContent = message['message'];
 
+				msg.appendChild(timeMsg);
 				msg.appendChild(pseudo);
 				msg.appendChild(content);
 
 				appendMsgContainer(msg);
 			}
 		});
+/*		socket.on('command',function (message) {	// APPLICATING COMMANDS
+			if(message === 'clearchat'){
+				const msgCont = document.getElementById('msgContainer')	// CLEAR ALL LOCAL MESSAGES
+				const msges = msgCont.childNodes;
+				const lenMsges = msges.length;
+
+				for(let i=0;i<lenMsges;i++){
+					msgCont.removeChild(msges[i]);
+				}
+			}
+		});*/
 		socket.on('login',function (pseudo) {	// RECEIVING LOGIN
 			if(myPseudo) {
 				const join = document.createElement('div');
@@ -133,24 +154,45 @@
 
 			const msg = document.getElementById('chatMsg');
 			if(myPseudo && !/^\s+$/.test(msg.value) && msg.value !== '') {
-				socket.emit('chat', {"pseudo": myPseudo, "message": msg.value});
+/*				if(msg.value === '/clearchat') {
+					msg.value = '';
+					const msgCont = document.getElementById('msgContainer')	// CLEAR ALL LOCAL MESSAGES
+					const msges = msgCont.childNodes;
+					const lenMsges = msges.length;
+					console.log(lenMsges)
+
+					for(let i=0;i<lenMsges;i++){
+						msgCont.removeChild(msges[i]);
+						console.log(msges[i])
+					}
+					socket.emit('command', 'clearchat');
+				}else {*/
+				let date = new Date();
+				date = date.getHours() + ':' + date.getMinutes() + ' ' + date.getDay() + '/' + date.getMonth()
+				socket.emit('chat', {"pseudo": myPseudo, "message": msg.value, "date": date});
 
 				const msgPost = document.createElement('div');	// POSTING MSG
-				msgPost.setAttribute('class','message');
+				msgPost.setAttribute('class', 'message');
+
+				const timeMsg = document.createElement('span');
+				timeMsg.setAttribute('class', 'date');
+				timeMsg.textContent = date;
 
 				const pseudo = document.createElement('span');
-				pseudo.setAttribute('class','pseudo');
+				pseudo.setAttribute('class', 'pseudo');
 				pseudo.textContent = myPseudo;
 
 				const content = document.createElement('span');
-				content.setAttribute('class','content');
+				content.setAttribute('class', 'content');
 				content.textContent = msg.value;
 
 				msg.value = '';
 
+				msgPost.appendChild(timeMsg);
 				msgPost.appendChild(pseudo);
 				msgPost.appendChild(content);
 				appendMsgContainer(msgPost);
+				/*}*/
 			}
 		});
 	})();

@@ -12,6 +12,10 @@
 	margin-bottom: 5px;
 	width: 100%;
 }
+.date {
+	font-size: 10px;
+	margin-right: 5px;
+}
 .login {
 	font-style: italic;
 }

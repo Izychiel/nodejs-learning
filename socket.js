@@ -18,9 +18,10 @@ io.sockets.on('connection',function (socket) {	// CONSOLE MSG ON CONNECT
 	socket.emit('message', 'Hello');
 });*/
 
-// ADD MESSAGES CHARGING ON LOGIN AND HIDE CHAT BEFORE
+// ADD CLEARCHAT AND DATE
 let messages = [];
 let pseudosMsg = [];
+let datesMsg = [];
 
 app.get('/chat',function (req, res) {
 	res.setHeader('Content-Type', 'text/html');
@@ -40,6 +41,16 @@ io.sockets.on('connection',function (socket) {
 	socket.on('chat',function (message) {	// SENDING MSG TO OTHERS
 		pseudosMsg.push(message['pseudo']);
 		messages.push(message['message']);
-		socket.broadcast.emit('chat', {'pseudo': message['pseudo'], 'message': message['message']});
-	})
+		datesMsg.push(message['date']);
+		socket.broadcast.emit('chat', {'pseudo': message['pseudo'], 'message': message['message'], 'date': message['date']});
+	});
+/*	socket.on('command',function (message) {	// COMMANDS
+		if(/^\/.+/.test(message['message'])) {	// ADDING COMMANDS
+			if (message['message'] === '/clearchat') {
+				messages = [];
+				pseudosMsg = [];
+				socket.broadcast.emit('command', 'clearchat');
+			}
+		}
+	});*/
 });
