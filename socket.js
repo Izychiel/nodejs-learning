@@ -35,8 +35,11 @@ io.sockets.on('connection',function (socket) {
 	socket.on('login',function (pseudo) {	// SEND THE NEW USER
 		pseudosMsg.push(pseudo);
 		messages.push('|' + pseudo + '|');
+		let date = new Date();
+		date = date.getHours() + ':' + date.getMinutes() + ' ' + date.getDay() + '/' + date.getMonth();
+		datesMsg.push(date);
 		socket.broadcast.emit('login', pseudo);
-		socket.emit('msglog', {'pseudos': pseudosMsg, 'messages': messages});
+		socket.emit('msglog', {'pseudos': pseudosMsg, 'messages': messages, 'date': datesMsg});
 	});
 	socket.on('chat',function (message) {	// SENDING MSG TO OTHERS
 		pseudosMsg.push(message['pseudo']);

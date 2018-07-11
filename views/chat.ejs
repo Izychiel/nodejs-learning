@@ -31,7 +31,7 @@
 
 		let myPseudo;
 
-		const socket = io.connect('http://localhost:8080')
+		const socket = io.connect(window.location.href.split('/')[2])	// START SOCKET ON ACTUAL WEBSITE
 
 		function appendMsgContainer(item) {
 			const msgContainer = document.getElementById('msgContainer');
@@ -53,7 +53,7 @@
 				for(let i=0; i<len; i++){
 					if(message['messages'][i] === '|'+myPseudo+'|') {
 						// DON'T SHOW OWN LOGIN MESSAGES
-					}else if (message['messages'][i] === '|'+message['pseudos'][i]+'|'){
+					}else if (message['messages'][i] === '|'+message['pseudos'][i]+'|'){	// LOGIN MSG
 						const join = document.createElement('div');
 						join.setAttribute('class', 'message');
 
@@ -63,13 +63,13 @@
 
 						join.appendChild(joinMsg);
 						appendMsgContainer(join);
-					}else{
+					}else{	// CHAT MSG
 						const msg = document.createElement('div');	// POSTING MSG
 						msg.setAttribute('class', 'message');
 
 						const timeMsg = document.createElement('span');
 						timeMsg.setAttribute('class', 'date');
-						timeMsg.textContent = message['date'];
+						timeMsg.textContent = message['date'][i];
 
 						const pseudo = document.createElement('span');
 						pseudo.setAttribute('class', 'pseudo');
@@ -168,7 +168,7 @@
 					socket.emit('command', 'clearchat');
 				}else {*/
 				let date = new Date();
-				date = date.getHours() + ':' + date.getMinutes() + ' ' + date.getDay() + '/' + date.getMonth()
+				date = date.getHours() + ':' + date.getMinutes() + ' ' + date.getDay() + '/' + date.getMonth();
 				socket.emit('chat', {"pseudo": myPseudo, "message": msg.value, "date": date});
 
 				const msgPost = document.createElement('div');	// POSTING MSG
