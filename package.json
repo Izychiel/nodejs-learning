@@ -8,7 +8,9 @@
     "ejs": "~2.6.1",
     "express": "~4.16.3",
     "socket.io": "^2.1.1",
-    "session.socket.io": "~0.2.1"
+    "session.socket.io": "~0.2.1",
+    "mongodb": "~3.1.1",
+    "mongoose": "~5.2.3"
   },
   "author": "Izychiel",
   "description": "First Node App"
