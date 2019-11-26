@@ -10,7 +10,7 @@
     "socket.io": "^2.1.1",
     "session.socket.io": "~0.2.1",
     "mongodb": "~3.1.1",
-    "mongoose": "~5.2.3"
+    "mongoose": "~5.7.5"
   },
   "author": "Izychiel",
   "description": "First Node App"
